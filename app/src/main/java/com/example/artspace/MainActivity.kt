@@ -15,15 +15,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.compose.ui.res.stringResource
 import com.example.artspace.presentation.ArtSpaceViewModel
-import com.example.artspace.ui.theme.ArtSpaceTheme
-import com.example.artspace.ui.theme.firaSans
+import com.example.artspace.ui.theme.*
 
 class MainActivity : ComponentActivity() {
     private val artSpaceViewModel by viewModels<ArtSpaceViewModel>()
@@ -54,10 +48,10 @@ fun Artwork(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(30.dp)
+            .padding(ArtworkPadding)
     ) {
         Column(
-            modifier = modifier.weight(1f),
+            modifier = modifier.weight(ContentWeight),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
@@ -67,82 +61,9 @@ fun Artwork(
         Box(
             modifier = modifier
                 .fillMaxWidth()
-                .height(50.dp)
+                .height(ControllerBlockHeight)
         ) {
             ArtworkController(viewModel)
-        }
-    }
-}
-
-@Preview
-@Composable
-fun ArtworkPreview() {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(30.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Surface(
-            elevation = 10.dp,
-            border = BorderStroke(2.dp, Color.Black),
-            modifier = Modifier.padding(30.dp)
-        ) {
-            Image(
-                modifier = Modifier.padding(30.dp),
-                painter = painterResource(id = R.drawable.vincent_van_gogh_self_portrait),
-                contentDescription = null
-            )
-        }
-
-        Surface(
-            elevation = 5.dp,
-        ) {
-            Column {
-                Text(
-                    modifier = Modifier.padding(10.dp),
-                    style = TextStyle(
-                        fontSize = 24.sp,
-                        fontFamily = firaSans,
-                        fontWeight = FontWeight.Medium
-                    ),
-                    text = "Self-portrait"
-                )
-                Text(
-                    modifier = Modifier.padding(start = 10.dp, end = 10.dp, bottom = 10.dp),
-                    style = TextStyle(
-                        fontSize = 16.sp,
-                        fontFamily = firaSans,
-                        fontWeight = FontWeight.Normal,
-                        fontStyle = FontStyle.Italic
-                    ),
-                    text = "Vincent van Gogh, 1889"
-                )
-            }
-        }
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly,
-            verticalAlignment = Alignment.Bottom
-        ) {
-            Button(
-                onClick = { },
-                modifier = Modifier.width(120.dp)
-            ) {
-                Text(
-                    text = "Previous"
-                )
-            }
-            Button(
-                onClick = { },
-                modifier = Modifier.width(120.dp)
-            ) {
-                Text(
-                    text = "Next"
-                )
-            }
         }
     }
 }
@@ -153,12 +74,12 @@ fun ArtworkImage(
     modifier: Modifier = Modifier
 ) {
     Surface(
-        elevation = 10.dp,
-        border = BorderStroke(2.dp, Color.Black),
-        modifier = modifier.padding(30.dp)
+        elevation = ArtworkImageElevation,
+        border = BorderStroke(ArtworkBorderStroke, Color.Black),
+        modifier = modifier.padding(ArtworkPadding)
     ) {
         Image(
-            modifier = modifier.padding(30.dp),
+            modifier = modifier.padding(ArtworkPadding),
             painter = painterResource(id = viewModel.currentArtwork.imageId),
             contentDescription = null
         )
@@ -171,27 +92,22 @@ fun ArtworkDescription(
     modifier: Modifier = Modifier
 ) {
     Surface(
-        elevation = 5.dp,
+        elevation = ArtworkDescriptionElevation,
     ) {
         Column {
             Text(
-                modifier = modifier.padding(10.dp),
-                style = TextStyle(
-                    fontSize = 24.sp,
-                    fontFamily = firaSans,
-                    fontWeight = FontWeight.Medium
-                ),
+                modifier = modifier.padding(DescriptionTextPadding),
+                style = ArtworkTitleTextStyle,
                 text = viewModel.currentArtwork.title
             )
             Text(
-                modifier = modifier.padding(start = 10.dp, end = 10.dp, bottom = 10.dp),
-                style = TextStyle(
-                    fontSize = 16.sp,
-                    fontFamily = firaSans,
-                    fontWeight = FontWeight.Normal,
-                    fontStyle = FontStyle.Italic
+                modifier = modifier.padding(
+                    start = DescriptionTextPadding,
+                    end = DescriptionTextPadding,
+                    bottom = DescriptionTextPadding
                 ),
-                text = "${viewModel.currentArtwork.artist}, ${viewModel.currentArtwork.year}"
+                style = ArtworkDescriptionTextStyle,
+                text = stringResource(id = R.string.artworkDescription, viewModel.currentArtwork.artist, viewModel.currentArtwork.year)
             )
         }
     }
@@ -209,18 +125,18 @@ fun ArtworkController(
     ) {
         Button(
             onClick = { viewModel.goToPreviousArtwork() },
-            modifier = modifier.width(120.dp)
+            modifier = modifier.width(ControllerButtonWidth)
         ) {
             Text(
-                text = "Previous"
+                text = PreviousButtonLabel
             )
         }
         Button(
             onClick = { viewModel.goToNextArtwork() },
-            modifier = modifier.width(120.dp)
+            modifier = modifier.width(ControllerButtonWidth)
         ) {
             Text(
-                text = "Next"
+                text = NextButtonLabel
             )
         }
     }
