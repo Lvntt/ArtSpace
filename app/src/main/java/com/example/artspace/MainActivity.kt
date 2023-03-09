@@ -4,6 +4,9 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.annotation.DrawableRes
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -40,6 +43,7 @@ fun ArtSpace(
     Artwork(viewModel)
 }
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun Artwork(
     viewModel: ArtSpaceViewModel,
@@ -55,22 +59,31 @@ fun Artwork(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            ArtworkImage(viewModel)
-            ArtworkDescription(viewModel)
+            AnimatedContent(targetState = viewModel.currentArtwork.imageId) { targetState ->
+                ArtworkImage(targetState)
+            }
+            ArtworkDescription(
+                viewModel.currentArtwork.title,
+                viewModel.currentArtwork.artist,
+                viewModel.currentArtwork.year.toString()
+            )
         }
         Box(
             modifier = modifier
                 .fillMaxWidth()
                 .height(ControllerBlockHeight)
         ) {
-            ArtworkController(viewModel)
+            ArtworkController(
+                { viewModel.goToPreviousArtwork() },
+                { viewModel.goToNextArtwork() }
+            )
         }
     }
 }
 
 @Composable
 fun ArtworkImage(
-    viewModel: ArtSpaceViewModel,
+    @DrawableRes imageId: Int,
     modifier: Modifier = Modifier
 ) {
     Surface(
@@ -80,7 +93,7 @@ fun ArtworkImage(
     ) {
         Image(
             modifier = modifier.padding(ArtworkPadding),
-            painter = painterResource(id = viewModel.currentArtwork.imageId),
+            painter = painterResource(id = imageId),
             contentDescription = null
         )
     }
@@ -88,7 +101,9 @@ fun ArtworkImage(
 
 @Composable
 fun ArtworkDescription(
-    viewModel: ArtSpaceViewModel,
+    title: String,
+    artist: String,
+    year: String,
     modifier: Modifier = Modifier
 ) {
     Surface(
@@ -98,7 +113,7 @@ fun ArtworkDescription(
             Text(
                 modifier = modifier.padding(DescriptionTextPadding),
                 style = ArtworkTitleTextStyle,
-                text = viewModel.currentArtwork.title
+                text = title
             )
             Text(
                 modifier = modifier.padding(
@@ -107,7 +122,7 @@ fun ArtworkDescription(
                     bottom = DescriptionTextPadding
                 ),
                 style = ArtworkDescriptionTextStyle,
-                text = stringResource(id = R.string.artworkDescription, viewModel.currentArtwork.artist, viewModel.currentArtwork.year)
+                text = stringResource(id = R.string.artworkDescription, artist, year)
             )
         }
     }
@@ -115,7 +130,8 @@ fun ArtworkDescription(
 
 @Composable
 fun ArtworkController(
-    viewModel: ArtSpaceViewModel,
+    onPreviousClick: () -> Unit,
+    onNextClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -124,7 +140,7 @@ fun ArtworkController(
         verticalAlignment = Alignment.Bottom
     ) {
         Button(
-            onClick = { viewModel.goToPreviousArtwork() },
+            onClick = { onPreviousClick() },
             modifier = modifier.width(ControllerButtonWidth)
         ) {
             Text(
@@ -132,7 +148,7 @@ fun ArtworkController(
             )
         }
         Button(
-            onClick = { viewModel.goToNextArtwork() },
+            onClick = { onNextClick() },
             modifier = modifier.width(ControllerButtonWidth)
         ) {
             Text(
